@@ -1,0 +1,17 @@
+{
+  "name": "toggler",
+  "version": "0.1.0",
+  "description": "Add accessible, class-based toggle button functionality to any element, with built-in configurable animation delays",
+  "author": "mjbp",
+  "license": "ISC",
+  "devDependencies": {
+    "browser-sync": "^2.7.12",
+    "gulp": "^3.9.0",
+    "gulp-browserify": "^0.5.1",
+    "gulp-debug": "^2.0.1",
+    "gulp-header": "^1.2.2",
+    "gulp-notify": "^2.2.0",
+    "gulp-plumber": "^1.0.1",
+    "run-sequence": "^1.1.0"
+  }
+}
