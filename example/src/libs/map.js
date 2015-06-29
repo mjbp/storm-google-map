@@ -55,8 +55,9 @@
                 gridSize: 20
             },
             infobox: {
-                template: '<div class="infobox"><div class="infobox-inner" id="infobox"><a href="{{url}}"><h1 class="infoxbox-heading">{{title}}</h1></a></div></div>',
+                template: '<div class="infobox"><div class="infobox-inner" id="infobox"><a href="{{url}}"><h1 class="infobox-heading">{{title}}</h1></a></div></div>',
                 closeIcon : 'data:image/svg+xml;charset=US-ASCII,%3Csvg%20fill%3D%22%23FFFFFF%22%20height%3D%2218%22%20viewBox%3D%220%200%2024%2024%22%20width%3D%2218%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%0A%20%20%20%20%3Cpath%20d%3D%22M19%206.41L17.59%205%2012%2010.59%206.41%205%205%206.41%2010.59%2012%205%2017.59%206.41%2019%2012%2013.41%2017.59%2019%2019%2017.59%2013.41%2012z%22/%3E%0A%20%20%20%20%3Cpath%20d%3D%22M0%200h24v24H0z%22%20fill%3D%22none%22/%3E%0A%3C/svg%3E',
+                urlBase: '/',
                 boxStyle: {
                     width:'250px',
                     opacity: 1
@@ -81,13 +82,16 @@
             marker = new google.maps.Marker({
                 position: latlng,
                 clickable: settings.modules.infobox,
-                infoxBoxData: {
-                    title: m.title,
-                    url: '/' + m.id
-                },
+                infoBoxData : {},
                 icon: settings.map.markerIcon
             });
-        
+    
+        for(var d in m) {
+            if(m.hasOwnProperty(d) && d !== 'location'){
+                marker.infoBoxData[d] = m[d];
+            }
+        }
+        marker.infoBoxData.url = settings.infobox.urlBase + m.id;
 		this.markers.push(marker);
 		this.boundary.extend(latlng);
 		return self;
@@ -131,7 +135,7 @@
 		}
         
 		infobox = new InfoBox({
-			content: overlay.parseTemplate(settings.infobox.template, this.infoxBoxData),
+			content: overlay.parseTemplate(settings.infobox.template, this.infoBoxData),
 			disableAutoPan: false,
 			zIndex: null,
 			maxWidth: 0,
