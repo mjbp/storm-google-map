@@ -1,15 +1,40 @@
-#Map
+#Storm Google Map
 
-Google Maps abstraction module, bundling Maps, Marker Clusterer and Marker Spidifier as needed in a single, easily configurable module.
+Google Maps API abstraction layer, bundling Google Maps API, Marker Clusterer and Marker Spidifier as needed in a single, easily configurable module, or a light (lite) version for a single location with only Google Maps API.
 
-##Why?
-Collate functionality of custom infoboxes, marker clustering and marker spidering (for markers that share the exact co-ordinates) into a single, easily configurable module that deals with module loading, default configuration and functionality.
+##Usage
+```
+npm install storm-google-map
+```
 
-##How to use
-    Map.asyncGoogleMapAPI(element, co-ordinates, options);
+```
+var GoogleMap = require('storm-google-map'),
+    locations = [
+        {
+            id: "Storm",
+            title: "StormId",
+            location : { 
+                lat: 55.9749013,
+                lng: -3.1669848
+            }
+        },
+        {
+            id: "Waverley",
+            title: "Waverley Station",
+            location : {
+                lat: 55.9519979,
+                lng: -3.1899702
+            }
+        }
+    ];
+
+GoogleMap.init('#js-map', locations);
+```
 
 ###Options
+```
     defaults = {
+            key: null,
             modules : {
                 infobox: true,
                 clusterer: true,
@@ -25,6 +50,7 @@ Collate functionality of custom infoboxes, marker clustering and marker spiderin
                     streetViewControl: true,
                     maxZoom: 16,
                     zoomControl: true,
+                    scrollwheel: false,
                     styles : [
                         {stylers: [{visibility: "on"}, {saturation: -100, hue: '#000000' }]},
                         {featureType: "road.local", stylers: [{ visibility: "simplified" }]},
@@ -54,3 +80,4 @@ Collate functionality of custom infoboxes, marker clustering and marker spiderin
                 pixelOffset: [-115, -10]
             }
         }
+```
