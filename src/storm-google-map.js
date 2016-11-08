@@ -233,7 +233,7 @@
 
 	function init(sel, locs, opts) {
         var el = document.querySelector(sel),
-            APIPath = CONSTANTS.GMAPI + (!opts || !!opts.key ? '' : '&key=' + opts.key);
+            APIPath = CONSTANTS.GMAPI + (!opts || !opts.key ? '' : '&key=' + opts.key);
 
         if(!el) {
             throw new Error('No DOM element supplied to contain map');

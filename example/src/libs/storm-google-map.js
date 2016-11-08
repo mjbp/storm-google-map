@@ -1,6 +1,6 @@
 /**
  * @name storm-google-map: Google Maps API loader and abstraction layer with spidering, clustering and infobox
- * @version 0.1.2: Fri, 24 Jun 2016 16:14:53 GMT
+ * @version 0.1.1: Tue, 08 Nov 2016 15:57:12 GMT
  * @author stormid
  * @license MIT
  */(function(root, factory) {
@@ -238,7 +238,7 @@
 
 	function init(sel, locs, opts) {
         var el = document.querySelector(sel),
-            APIPath = CONSTANTS.GMAPI + (!opts || !!opts.key ? '' : '&key=' + opts.key);
+            APIPath = CONSTANTS.GMAPI + (!opts || !opts.key ? '' : '&key=' + opts.key);
 
         if(!el) {
             throw new Error('No DOM element supplied to contain map');
