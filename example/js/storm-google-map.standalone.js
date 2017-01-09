@@ -1,0 +1,300 @@
+/**
+ * @name storm-google-map: Google Maps API loader and abstraction layer with spidering, clustering and infobox
+ * @version 0.1.2: Mon, 09 Jan 2017 18:17:24 GMT
+ * @author stormid
+ * @license MIT
+ */
+(function(root, factory) {
+   var mod = {
+       exports: {}
+   };
+   if (typeof exports !== 'undefined'){
+       mod.exports = exports
+       factory(mod.exports)
+       module.exports = mod.exports.default
+   } else {
+       factory(mod.exports);
+       root.StormGoogleMap = mod.exports.default
+   }
+
+}(this, function(exports) {
+   'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _stormLoad = require('storm-load');
+
+var _stormLoad2 = _interopRequireDefault(_stormLoad);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var CONSTANTS = {
+    GMAPI: 'http://maps.googleapis.com/maps/api/js?callback=$__GMAPILoaded__$',
+    INFOBOX: 'https://cdn.rawgit.com/googlemaps/v3-utility-library/a2cdc955fcd20d47db28db645e63f0d2054070c9/1.1.9/src/infobox_packed.js',
+    CLUSTERER: 'https://cdn.rawgit.com/googlemaps/v3-utility-library/df501fcbc3e7513d6a94718ab6673de47c202255/1.0.2/src/markerclusterer_compiled.js',
+    SPIDIFIER: 'https://jawj.github.io/OverlappingMarkerSpiderfier/bin/oms.min.js'
+},
+    defaults = {
+    key: null,
+    modules: {
+        infobox: true,
+        clusterer: true,
+        spidifier: true
+    },
+    map: {
+        options: {
+            scaleControl: false,
+            mapTypeControl: false,
+            overviewMapControl: true,
+            panControl: false,
+            rotateControl: false,
+            streetViewControl: true,
+            maxZoom: 16,
+            zoomControl: true,
+            styles: [{ stylers: [{ visibility: "on" }, { saturation: -100, hue: '#000000' }] }, { featureType: "road.local", stylers: [{ visibility: "simplified" }] }, { featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }] }, { featureType: "landscape.man_made", stylers: [{ visibility: "on" }] }, { featureType: "transit", stylers: [{ visibility: "on" }] }]
+        },
+        markerIcon: 'data:image/svg+xml;charset=US-ASCII,%3Csvg%20fill%3D%22%23000000%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20width%3D%2224%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%0A%20%20%20%20%3Cpath%20d%3D%22M12%202C8.13%202%205%205.13%205%209c0%205.25%207%2013%207%2013s7-7.75%207-13c0-3.87-3.13-7-7-7zm0%209.5c-1.38%200-2.5-1.12-2.5-2.5s1.12-2.5%202.5-2.5%202.5%201.12%202.5%202.5-1.12%202.5-2.5%202.5z%22/%3E%0A%20%20%20%20%3Cpath%20d%3D%22M0%200h24v24H0z%22%20fill%3D%22none%22/%3E%0A%3C/svg%3E'
+    },
+    spiderifier: {
+        keepSpiderfied: true,
+        markersWontMove: true,
+        markersWontHide: true
+    },
+    clusterer: {
+        maxZoom: 12,
+        gridSize: 20
+    },
+    infobox: {
+        template: '<div class="infobox"><div class="infobox-inner" id="infobox"><a href="{{url}}"><h1 class="infobox-heading">{{title}}</h1></a></div></div>',
+        closeIcon: 'data:image/svg+xml;charset=US-ASCII,%3Csvg%20fill%3D%22%23FFFFFF%22%20height%3D%2218%22%20viewBox%3D%220%200%2024%2024%22%20width%3D%2218%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%0A%20%20%20%20%3Cpath%20d%3D%22M19%206.41L17.59%205%2012%2010.59%206.41%205%205%206.41%2010.59%2012%205%2017.59%206.41%2019%2012%2013.41%2017.59%2019%2019%2017.59%2013.41%2012z%22/%3E%0A%20%20%20%20%3Cpath%20d%3D%22M0%200h24v24H0z%22%20fill%3D%22none%22/%3E%0A%3C/svg%3E',
+        urlBase: '/',
+        boxStyle: {
+            width: '250px',
+            opacity: 1
+        },
+        pixelOffset: [-115, -10]
+    }
+},
+    StormGoogleMap = {
+    init: function init() {
+        this.markers = [];
+        this.locations = locations;
+        this.element = element;
+        this.createMarkers();
+        this.map = new google.maps.Map(element, this.settings.map.options);
+
+        if (!!settings.modules.spidifier) {
+            this.initSpidifier();
+        }
+        this.placeMarkers();
+
+        if (!!settings.modules.clusterer) {
+            this.markerCluster = new MarkerClusterer(this.map, this.markers, this.settings.clusterer);
+        }
+        this.setBoundary();
+    },
+    createMarkers: function createMarkers() {
+        this.boundary = new google.maps.LatLngBounds();
+        this.markers = this.locations.map(function (m) {
+            var latLng = new google.maps.LatLng(m.location.lat, m.location.lng),
+                infoBoxData = {};
+
+            for (var d in m) {
+                if (m.hasOwnProperty(d) && d !== 'location') {
+                    infoBoxData[d] = m[d];
+                }
+            }
+
+            this.boundary.extend(latLng);
+            return new google.maps.Marker({
+                position: latLng,
+                clickable: this.settings.modules.infobox,
+                infoBoxData: infoBoxData,
+                icon: {
+                    url: this.settings.map.markerIcon,
+                    scaledSize: new google.maps.Size(24, 24)
+                },
+                optimized: false
+            });
+        }.bind(this));
+    },
+    setBoundary: function setBoundary() {
+        if (this.markers.length > 1) {
+            this.map.fitBounds(this.boundary);
+        } else {
+            this.map.setCenter(this.boundary.getCenter());
+            this.map.setZoom(this.zoom);
+        }
+    },
+    placeMarkers: function placeMarkers() {
+        this.markers.forEach(function (marker) {
+            marker.setMap(this.map);
+            if (!!this.settings.modules.spidifier) {
+                this.spidifier.addMarker(marker);
+            } else {
+                if (!!this.settings.modules.infobox) {
+                    google.maps.event.addListener(marker, 'click', this.clickMarker);
+                }
+            }
+        }.bind(this));
+    },
+    initSpidifier: function initSpidifier() {
+        this.spidifier = new OverlappingMarkerSpiderfier(this.map, this.settings.spiderifier);
+
+        if (!!this.settings.modules.infobox) {
+            this.spidifier.addListener('click', function (marker, event) {
+                this.clickMarker.call(marker);
+            }.bind(this));
+        }
+    },
+    clearMarkers: function clearMarkers() {
+        if (this.markers.length > 0) {
+            this.markers.forEach(function (marker) {
+                marker.setMap(null);
+            });
+            this.markers.length = 0;
+            this.spidifier.clearMarkers();
+        }
+    },
+    clickMarker: function clickMarker() {
+        var overlay = {
+            parseTemplate: function parseTemplate(template, data) {
+                for (var i in data) {
+                    if (data.hasOwnProperty(i)) {
+                        template = template.split('{{' + i + '}}').join(data[i]);
+                    }
+                }
+                return template;
+            }
+        };
+
+        if (!!this.infobox) {
+            this.infobox.close(self.map, this);
+        }
+
+        this.infobox = new InfoBox({
+            content: overlay.parseTemplate(settings.infobox.template, this.infoBoxData),
+            disableAutoPan: false,
+            zIndex: null,
+            maxWidth: 0,
+            boxStyle: settings.infobox.boxStyle,
+            pixelOffset: new google.maps.Size(settings.infobox.pixelOffset[0], settings.infobox.pixelOffset[1]),
+            alignBottom: true,
+            closeBoxMargin: '4px 4px 4px 4px',
+            isHidden: false,
+            closeBoxURL: settings.infobox.closeIcon,
+            infoBoxClearance: new google.maps.Size(1, 1),
+            pane: 'floatPane',
+            enableEventPropagation: false
+        });
+        this.infobox.open(this.map, this);
+        google.maps.event.addListener(this.map, 'click', function () {
+            this.infobox.close(this.map);
+        }.bind(this));
+    }
+};
+var settings = {},
+    locations = [],
+    element = false;
+
+var run = function run() {};
+
+var init = function init(sel, locs, opts) {
+    var el = document.querySelector(sel),
+        APIPath = CONSTANTS.GMAPI + (!opts || !opts.key ? '' : '&key=' + opts.key);
+
+    if (!el) throw new Error('No DOM element supplied to contain map');
+    if (!opts || !opts.key) console.warn('Google Maps JS API requires a key outwith localhost');
+
+    settings = Object.assign({}, defaults, opts);
+    locations = locs;
+    element = el;
+    window.$__GMAPILoaded__$ = run;
+
+    (0, _stormLoad2.default)([APIPath]).then(function () {
+        var modules = ['infobox', 'clusterer', 'spidifier'],
+            dependencies = modules.filter(function (module) {
+            return settings.modules[module] === true;
+        }).map(function (module) {
+            return CONSTANTS[module.toUpperCase()];
+        });
+        (0, _stormLoad2.default)(dependencies).then(function () {
+            console.log('ready');
+        }).catch(function (e) {
+            el.innerHTML = '<b>' + e + '/b>';
+            console.log(e);
+        });
+    }).catch(function (e) {
+        el.innerHTML = '<b>' + e + '/b>';
+        console.log(e);
+    });
+};
+
+/*
+
+    function create(opts) {
+        return Object.assign(Object.create(StormGoogleMaps), {
+            settings: Object.assign({}, defaults, opts)
+        }).init();
+    }
+
+    function appendScript(src, cb) {
+        var script = document.createElement('script'),
+            timer = window.setTimeout(function() {
+                throw new Error('Script ' + src + ' failed to load in time.');
+            }, CONSTANTS.TIMEOUT);
+        script.src = src;
+        script.onload = function() {
+            window.clearTimeout(timer);
+            !!cb && cb();
+        };
+        document.body.appendChild(script);
+    };
+
+    function $__GMAPILoaded__$(){
+        var total = 0,
+            loaded = 0,
+            then = function(){
+                loaded++;
+                if(loaded === total){
+                    delete window.$__GMAPILoaded__$;
+                    return create(settings);
+                }
+            },
+            curriedAppendScript = function(s){
+                return appendScript(s, then);
+            };
+        
+        for (var m in settings.modules) {
+            if(settings.modules.hasOwnProperty(m) && !!settings.modules[m]){
+                total++;
+                curriedAppendScript(CONSTANTS[m.toUpperCase()]);
+            } 
+        }
+        
+        if(total === 0){
+            return create(settings);
+        }
+    }
+
+	function init(sel, locs, opts) {
+        var el = document.querySelector(sel),
+            APIPath = CONSTANTS.GMAPI + (!opts || !opts.key ? '' : '&key=' + opts.key);
+
+        if(!el) {
+            throw new Error('No DOM element supplied to contain map');
+        }
+        settings = Object.assign({}, defaults, opts);
+        locations = locs;
+        element = el;
+		window.$__GMAPILoaded__$ = $__GMAPILoaded__$;
+		
+        appendScript(APIPath);
+	}
+
+    */
+
+exports.default = { init: init };;
+}));
