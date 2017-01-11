@@ -1,34 +1,70 @@
 #Storm Google Map
 
-Google Maps API abstraction layer, bundling Google Maps API, Marker Clusterer and Marker Spidifier as needed in a single, easily configurable module, or a light (lite) version for a single location with only Google Maps API.
+[![Build Status](https://travis-ci.org/mjbp/storm-google-map.svg?branch=master)](https://travis-ci.org/mjbp/storm-google-map)
+[![codecov.io](http://codecov.io/github/mjbp/storm-google-map/coverage.svg?branch=master)](http://codecov.io/github/mjbp/storm-google-map?branch=master)
+[![npm version](https://badge.fury.io/js/storm-google-map.svg)](https://badge.fury.io/js/storm-google-map)
+
+Google Maps API abstraction layer, bundling Google Maps API, Infobox, Marker Clusterer and Marker Spidifier as needed in a single, easily configurable module, or a light (lite) version for a single location with only Google Maps API.
+
+Infobox is powered by [https://github.com/googlemaps/v3-utility-library/tree/master/infobox](https://github.com/googlemaps/v3-utility-library/tree/master/infobox)
+Marker spiderifying is powered by [https://github.com/jawj/OverlappingMarkerSpiderfier](https://github.com/jawj/OverlappingMarkerSpiderfier).
+Clustering by [https://github.com/googlemaps/js-marker-clusterer](https://github.com/googlemaps/js-marker-clusterer)
+
+See the options below for configuring your map.
+
+##Example
+[https://mjbp.github.io/storm-google-map](https://mjbp.github.io/storm-google-map)
 
 ##Usage
+HTML
+```
+<div class="js-map"></div>
+```
+
+JS
 ```
 npm install storm-google-map
 ```
 
+either using es6 import
 ```
-var GoogleMap = require('storm-google-map'),
-    locations = [
-        {
-            id: "Storm",
-            title: "StormId",
-            location : { 
-                lat: 55.9749013,
-                lng: -3.1669848
-            }
-        },
-        {
-            id: "Waverley",
-            title: "Waverley Station",
-            location : {
-                lat: 55.9519979,
-                lng: -3.1899702
-            }
-        }
-    ];
+import Map from 'storm-google-map';
 
-GoogleMap.init('#js-map', locations);
+Map.init('.js-map', [
+    {
+        id: 'Storm',
+        title: 'Storm Id',
+        location : { 
+            lat: 55.9749013,
+            lng: -3.1669848
+        }
+    }])
+    .then(res => {
+        console.log(res);
+    });
+
+```
+aynchronous browser loading (use the .standalone version in the /dist folder)
+```
+import Load from 'storm-load';
+
+Load('/content/js/async/storm-guide.standalone.js')
+    .then(() => {
+        StormGoogleMap.init('.js-map', [
+            {
+                id: 'Storm',
+                title: 'Storm Id',
+                location : { 
+                    lat: 55.9749013,
+                    lng: -3.1669848
+                }
+            }], {
+                key: 'Your Google Maps API key'
+            })
+            .then(res => {
+                console.log(res);
+            });
+    });
 ```
 
 ###Options
@@ -81,3 +117,42 @@ GoogleMap.init('#js-map', locations);
             }
         }
 ```
+e.g.
+```
+Map.init('.js-map', [
+    {
+        id: 'Storm',
+        title: 'Storm Id',
+        location : { 
+            lat: 55.9749013,
+            lng: -3.1669848
+        }
+    }], {
+        key: 'Your Google Maps API key',
+        modules : {
+            infobox: true,
+            clusterer: false,
+            spidifier: false
+        },
+    })
+    .then(res => {
+        console.log(res);
+    });
+```
+
+##Tests
+```
+npm run test
+```
+
+##Browser support
+This is module has both es6 and es5 distributions. The es6 version should be used in a workflow that transpiles.
+
+The es5 version depends unpon Object.assign, element.classList, and Promises so all evergreen browsers are supported out of the box, ie9+ is supported with polyfills. ie8+ will work with even more polyfils for Array functions and eventListeners.
+
+##Dependencies
+None
+
+##License
+MIT
+

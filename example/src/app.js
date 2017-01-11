@@ -1,4 +1,4 @@
-import GoogleMap from './libs/storm-google-map-lite';
+import GoogleMap from './libs/storm-google-map';
 
 const onDOMContentLoadedTasks = [() => {
 	GoogleMap.init('#js-map', [
