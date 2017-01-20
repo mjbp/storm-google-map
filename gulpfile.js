@@ -81,6 +81,21 @@ gulp.task('js:es5', function() {
 		.pipe(gulp.dest('dist/'));
 });
 
+gulp.task('js:es5-browserify', function() {
+    return browserify({
+            entries: 'src/' + pkg.name + '.js',
+            debug: true
+        })
+        .transform(babelify, {presets: ['es2015']})
+        .bundle()
+        .pipe(source(pkg.name + '.js'))
+        .pipe(buffer())
+        .pipe(uglify())
+        .pipe(header(banner, {pkg : pkg}))
+  		.pipe(rename({suffix: '.standalone'}))
+		.pipe(gulp.dest('dist/'));
+});
+
 gulp.task('js:es6', function() {
     return gulp.src('src/*.js')
         .pipe(plumber({errorHandler: onError}))
@@ -88,7 +103,7 @@ gulp.task('js:es6', function() {
 		.pipe(gulp.dest('dist/'));
 });
 
-gulp.task('js', ['js:es6', 'js:es5']);
+gulp.task('js', ['js:es6', 'js:es5-browserify']);
 
 gulp.task('copy', function() {
     return gulp.src('./dist/*.js')
