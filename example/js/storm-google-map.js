@@ -1,18 +1,51 @@
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+	typeof define === 'function' && define.amd ? define(factory) :
+	(global.StormGoogleMap = factory());
+}(this, (function () { 'use strict';
+
 /**
- * @name storm-google-map: Google Maps API loader and abstraction layer with spidering, clustering and infobox
- * @version 0.1.2: Fri, 20 Jan 2017 16:42:19 GMT
+ * @name storm-load: Lightweight promise-based script loader
+ * @version 0.4.0: Fri, 20 Jan 2017 16:57:34 GMT
  * @author stormid
  * @license MIT
  */
-import Load from 'storm-load';
+const create = url => {
+	return new Promise((resolve, reject) => {
+		let s = document.createElement('script');
+		s.src = url;
+		s.onload = s.onreadystatechange = function() {
+			if (!this.readyState || this.readyState === 'complete') resolve();
+		};
+		s.onerror = s.onabort = reject;
+		document.head.appendChild(s);
+	});
+};
+
+const synchronous = urls => {
+	return new Promise((resolve, reject) => {
+		let next = () => {
+			if (!urls.length) return resolve();
+			create(urls.shift()).then(next).catch(reject);
+		};
+		next();
+	});
+};
+
+var Load = (urls, async = true) => {
+	urls = [].concat(urls);
+	if (!async) return synchronous(urls);
+
+	return Promise.all(urls.map(url => create(url)));
+};
 
 const CONSTANTS = {
 		GMAPI: 'http://maps.googleapis.com/maps/api/js?callback=$__GMAPILoaded__$',
 		INFOBOX: 'https://cdn.rawgit.com/googlemaps/v3-utility-library/a2cdc955fcd20d47db28db645e63f0d2054070c9/1.1.9/src/infobox_packed.js',
 		CLUSTERER: 'https://cdn.rawgit.com/googlemaps/v3-utility-library/df501fcbc3e7513d6a94718ab6673de47c202255/1.0.2/src/markerclusterer_compiled.js',
 		SPIDIFIER: 'https://jawj.github.io/OverlappingMarkerSpiderfier/bin/oms.min.js'
-	},
-	defaults = {
+	};
+const defaults = {
 		key: null,
 		modules: {
 			infobox: true,
@@ -59,8 +92,8 @@ const CONSTANTS = {
 			},
 			pixelOffset: [-115, -10]
 		}
-	},
-	StormGoogleMap = {
+	};
+const StormGoogleMap = {
 		init(){
 			this.isReady = false;
 
@@ -159,9 +192,9 @@ const CONSTANTS = {
         }*/
 	};
 
-let settings = {},
-	locations = [],
-	element = false;
+let settings = {};
+let locations = [];
+let element = false;
 
 const run = () => delete window.$__GMAPILoaded__$;
 
@@ -191,4 +224,8 @@ const init = (sel, locs, opts) => {
 	.catch(e => console.log(`Script loading error: ${e.message}`));
 };
 
-export default { init };
+var stormGoogleMap = { init };
+
+return stormGoogleMap;
+
+})));

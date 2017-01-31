@@ -1,6 +1,6 @@
 /**
  * @name storm-google-map: Google Maps API loader and abstraction layer with spidering, clustering and infobox
- * @version 0.1.2: Wed, 11 Jan 2017 10:06:19 GMT
+ * @version 0.1.2: Tue, 31 Jan 2017 12:40:51 GMT
  * @author stormid
  * @license MIT
  */
@@ -23,17 +23,49 @@
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
+/**
+ * @name storm-load: Lightweight promise-based script loader
+ * @version 0.4.0: Fri, 20 Jan 2017 16:57:34 GMT
+ * @author stormid
+ * @license MIT
+ */
+var create = function create(url) {
+	return new Promise(function (resolve, reject) {
+		var s = document.createElement('script');
+		s.src = url;
+		s.onload = s.onreadystatechange = function () {
+			if (!this.readyState || this.readyState === 'complete') resolve();
+		};
+		s.onerror = s.onabort = reject;
+		document.head.appendChild(s);
+	});
+};
 
-var _stormLoad = require('storm-load');
+var synchronous = function synchronous(urls) {
+	return new Promise(function (resolve, reject) {
+		var next = function next() {
+			if (!urls.length) return resolve();
+			create(urls.shift()).then(next).catch(reject);
+		};
+		next();
+	});
+};
 
-var _stormLoad2 = _interopRequireDefault(_stormLoad);
+var Load = function Load(urls) {
+	var async = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	urls = [].concat(urls);
+	if (!async) return synchronous(urls);
+
+	return Promise.all(urls.map(function (url) {
+		return create(url);
+	}));
+};
 
 var CONSTANTS = {
 	GMAPI: 'http://maps.googleapis.com/maps/api/js?callback=$__GMAPILoaded__$'
-},
-    defaults = {
+};
+var defaults = {
 	key: null,
 	map: {
 		options: {
@@ -60,8 +92,8 @@ var CONSTANTS = {
 		},
 		pixelOffset: [-115, -10]
 	}
-},
-    StormGoogleMap = {
+};
+var StormGoogleMap = {
 	init: function init() {
 		this.isReady = false;
 
@@ -131,9 +163,9 @@ var CONSTANTS = {
 
 };
 
-var settings = {},
-    locations = [],
-    element = false;
+var settings = {};
+var locations = [];
+var element = false;
 
 var run = function run() {
 	return delete window.$__GMAPILoaded__$;
@@ -150,7 +182,7 @@ var init = function init(sel, locs, opts) {
 	element = el;
 	window.$__GMAPILoaded__$ = run;
 
-	return (0, _stormLoad2.default)([APIPath]).then(function () {
+	return Load([APIPath]).then(function () {
 		return Object.assign(Object.create(StormGoogleMap), {
 			settings: settings
 		}).init();
@@ -159,5 +191,7 @@ var init = function init(sel, locs, opts) {
 	});
 };
 
-exports.default = { init: init };;
+var stormGoogleMapLite = { init: init };
+
+exports.default = stormGoogleMapLite;;
 }));
