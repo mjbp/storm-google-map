@@ -12,6 +12,8 @@ Clustering by [https://github.com/googlemaps/js-marker-clusterer](https://github
 
 See the options below for configuring your map.
 
+Available in two versions - the full version allowing multiple markers, clustering, spidering, and custom overlays. The lite version only loads the map and one uninteractive marker. The lite version is contained in the dist/ folder.
+
 ##Example
 [https://mjbp.github.io/storm-google-map](https://mjbp.github.io/storm-google-map)
 
@@ -23,7 +25,7 @@ HTML
 
 JS
 ```
-npm install storm-google-map
+npm i -S storm-google-map
 ```
 
 either using es6 import
@@ -38,7 +40,9 @@ Map.init('.js-map', [
             lat: 55.9749013,
             lng: -3.1669848
         }
-    }])
+    }], {
+        key: 'Your Google Maps API key'
+    })
     .then(res => {
         console.log(res);
     });
@@ -68,9 +72,10 @@ Load('/content/js/async/storm-guide.standalone.js')
 ```
 
 ###Options
+Your own Google Maps API key will be required
 ```
     defaults = {
-            key: null,
+            key: null,//your key
             modules : {
                 infobox: true,
                 clusterer: true,
@@ -148,10 +153,13 @@ npm run test
 ##Browser support
 This is module has both es6 and es5 distributions. The es6 version should be used in a workflow that transpiles.
 
-The es5 version depends unpon Object.assign, element.classList, and Promises so all evergreen browsers are supported out of the box, ie9+ is supported with polyfills. ie8+ will work with even more polyfils for Array functions and eventListeners.
+This module depends upon Object.assign, element.classList, and Promises, available in all evergreen browsers. ie9+ is supported with polyfills, ie8+ will work with even more polyfills for Array functions and eventListeners.
 
 ##Dependencies
-None
+Google Maps JS API
+
+Import storm-load(https://mjbp.github.io/storm-load)
+
 
 ##License
 MIT
