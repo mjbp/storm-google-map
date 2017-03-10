@@ -52,7 +52,7 @@ aynchronous browser loading (use the .standalone version in the /dist folder)
 ```
 import Load from 'storm-load';
 
-Load('/content/js/async/storm-guide.standalone.js')
+Load('/content/js/async/storm-google-map.standalone.js')
     .then(() => {
         StormGoogleMap.init('.js-map', [
             {
