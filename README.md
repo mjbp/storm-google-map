@@ -1,4 +1,4 @@
-#Storm Google Map
+# Storm Google Map
 
 [![Build Status](https://travis-ci.org/mjbp/storm-google-map.svg?branch=master)](https://travis-ci.org/mjbp/storm-google-map)
 [![codecov.io](http://codecov.io/github/mjbp/storm-google-map/coverage.svg?branch=master)](http://codecov.io/github/mjbp/storm-google-map?branch=master)
@@ -14,10 +14,10 @@ See the options below for configuring your map.
 
 Available in two versions - the full version allowing multiple markers, clustering, spidering, and custom overlays. The lite version only loads the map and one uninteractive marker. The lite version is contained in the dist/ folder.
 
-##Example
+## Example
 [https://mjbp.github.io/storm-google-map](https://mjbp.github.io/storm-google-map)
 
-##Usage
+## Usage
 HTML
 ```
 <div class="js-map"></div>
@@ -71,7 +71,7 @@ Load('/content/js/async/storm-google-map.standalone.js')
     });
 ```
 
-###Options
+### Options
 Your own Google Maps API key will be required
 ```
     defaults = {
@@ -145,22 +145,22 @@ Map.init('.js-map', [
     });
 ```
 
-##Tests
+## Tests
 ```
 npm run test
 ```
 
-##Browser support
+## Browser support
 This is module has both es6 and es5 distributions. The es6 version should be used in a workflow that transpiles.
 
 This module depends upon Object.assign, element.classList, and Promises, available in all evergreen browsers. ie9+ is supported with polyfills, ie8+ will work with even more polyfills for Array functions and eventListeners.
 
-##Dependencies
+## Dependencies
 Google Maps JS API
 
 Import storm-load(https://mjbp.github.io/storm-load)
 
 
-##License
+## License
 MIT
 
