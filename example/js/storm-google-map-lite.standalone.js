@@ -1,6 +1,6 @@
 /**
  * @name storm-google-map: Google Maps API loader and abstraction layer with spidering, clustering and infobox
- * @version 0.1.2: Fri, 10 Feb 2017 15:30:37 GMT
+ * @version 0.1.2: Fri, 10 Mar 2017 16:15:19 GMT
  * @author stormid
  * @license MIT
  */
