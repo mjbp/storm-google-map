@@ -1,6 +1,6 @@
 {
   "name": "storm-google-map",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Google Maps API loader and abstraction layer with spidering, clustering and custom infobox",
   "author": "stormid",
   "license": "MIT",
