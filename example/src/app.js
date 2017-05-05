@@ -2,7 +2,7 @@ import Load from 'storm-load';
 
 const onDOMContentLoadedTasks = [() => {
 
-	Load('./js/storm-google-map.standalone.js')
+	Load('./js/storm-google-map-index.standalone.js')
 		.then(() => {
 			StormGoogleMap.init('#js-map', [
 				{

@@ -4,7 +4,7 @@
 [![codecov.io](http://codecov.io/github/mjbp/storm-google-map/coverage.svg?branch=master)](http://codecov.io/github/mjbp/storm-google-map?branch=master)
 [![npm version](https://badge.fury.io/js/storm-google-map.svg)](https://badge.fury.io/js/storm-google-map)
 
-Google Maps API abstraction layer, bundling Google Maps API, Infobox, Marker Clusterer and Marker Spidifier as needed in a single, easily configurable module, or a light (lite) version for a single location with only Google Maps API.
+Google Maps API abstraction layer, bundling Google Maps API, custom Infobox, Marker Clusterer and Marker Spidifier as needed in a single, easily configurable module, or a light (lite) version for a single location with only Google Maps API.
 
 Infobox is powered by [https://github.com/googlemaps/v3-utility-library/tree/master/infobox](https://github.com/googlemaps/v3-utility-library/tree/master/infobox)
 Marker spiderifying is powered by [https://github.com/jawj/OverlappingMarkerSpiderfier](https://github.com/jawj/OverlappingMarkerSpiderfier).
@@ -12,7 +12,7 @@ Clustering by [https://github.com/googlemaps/js-marker-clusterer](https://github
 
 See the options below for configuring your map.
 
-Available in two versions - the full version allowing multiple markers, clustering, spidering, and custom overlays. The lite version only loads the map and one uninteractive marker. The lite version is contained in the dist/ folder.
+Available in two versions - the full version allowing multiple markers, clustering, spidering, and custom infobox overlays. The lite version only loads the map within interactive markers, and can be found in the dist/ folder.
 
 ## Example
 [https://mjbp.github.io/storm-google-map](https://mjbp.github.io/storm-google-map)

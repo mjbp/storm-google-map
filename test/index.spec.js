@@ -1,6 +1,6 @@
 import should from 'should';
-import Map from '../dist/storm-google-map.standalone';
 import 'jsdom-global/register';
+import Map from '../dist/storm-google-map-index.standalone';
 
 const html = `<div class="js-map"></div>`;
 

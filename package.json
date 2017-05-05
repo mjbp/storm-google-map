@@ -1,7 +1,7 @@
 {
   "name": "storm-google-map",
   "version": "1.0.1",
-  "description": "Google Maps API loader and abstraction layer with spidering, clustering and infobox",
+  "description": "Google Maps API loader and abstraction layer with spidering, clustering and custom infobox",
   "author": "stormid",
   "license": "MIT",
   "repository": {
@@ -11,7 +11,7 @@
   "bugs": {
     "url": "https://github.com/mjbp/storm-google-map/issues"
   },
-  "main": "dist/storm-google-map.js",
+  "main": "dist/index.js",
   "keywords": [
     "stormid",
     "google",
@@ -64,7 +64,8 @@
     "run-sequence": "^1.1.0",
     "should": "^11.1.1",
     "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0"
+    "vinyl-source-stream": "^1.1.0",
+    "rollup-plugin-commonjs": "^8.0.2"
   },
   "dependencies": {
     "storm-load": "latest"

@@ -65,8 +65,13 @@ var Load = function Load(urls) {
     }));
 };
 
-var lite$1 = {
+var full = {
     key: null,
+    modules: {
+        infobox: true,
+        clusterer: true,
+        spidifier: true
+    },
     map: {
         options: {
             scaleControl: false,
@@ -81,6 +86,15 @@ var lite$1 = {
             styles: [{ stylers: [{ visibility: 'on' }, { saturation: -100, hue: '#000000' }] }, { featureType: 'road.local', stylers: [{ visibility: 'simplified' }] }, { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] }, { featureType: 'landscape.man_made', stylers: [{ visibility: 'on' }] }, { featureType: 'transit', stylers: [{ visibility: 'on' }] }]
         },
         markerIcon: 'data:image/svg+xml;charset=US-ASCII,%3Csvg%20fill%3D%22%23000000%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20width%3D%2224%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%0A%20%20%20%20%3Cpath%20d%3D%22M12%202C8.13%202%205%205.13%205%209c0%205.25%207%2013%207%2013s7-7.75%207-13c0-3.87-3.13-7-7-7zm0%209.5c-1.38%200-2.5-1.12-2.5-2.5s1.12-2.5%202.5-2.5%202.5%201.12%202.5%202.5-1.12%202.5-2.5%202.5z%22/%3E%0A%20%20%20%20%3Cpath%20d%3D%22M0%200h24v24H0z%22%20fill%3D%22none%22/%3E%0A%3C/svg%3E'
+    },
+    spiderifier: {
+        keepSpiderfied: true,
+        markersWontMove: true,
+        markersWontHide: true
+    },
+    clusterer: {
+        maxZoom: 12,
+        gridSize: 20
     },
     infobox: {
         template: '<div class="infobox"><div class="infobox-inner" id="infobox"><h1 class="infobox-heading">{{title}}</h1></div></div>',
@@ -107,10 +121,13 @@ var componentPrototype = {
 
         this.map = new google.maps.Map(this.node, this.settings.map.options);
         this.boundary = new google.maps.LatLngBounds();
-
         this.markers = this.createMarkers();
 
+        this.spidifier = this.settings.modules.spidifier ? this.initSpidifier() : false;
+
         this.attachMarkers();
+
+        this.markerCluster = this.settings.modules.clusterer ? new MarkerClusterer(this.map, this.markers, this.settings.clusterer) : false;
 
         this.map.fitBounds(this.boundary);
 
@@ -128,7 +145,8 @@ var componentPrototype = {
 
             return new google.maps.Marker({
                 position: latLng,
-                clickable: false,
+                clickable: _this.settings.modules.infobox,
+                infoBoxData: marker,
                 icon: {
                     url: _this.settings.map.markerIcon,
                     scaledSize: new google.maps.Size(24, 24)
@@ -137,25 +155,65 @@ var componentPrototype = {
             });
         });
     },
-    attachMarkers: function attachMarkers() {
+    initSpidifier: function initSpidifier() {
         var _this2 = this;
 
+        var spidifier = new OverlappingMarkerSpiderfier(this.map, this.settings.spiderifier);
+        if (this.settings.modules.infobox) spidifier.addListener('click', function (marker) {
+            return _this2.clickMarker.call(marker);
+        });
+        return spidifier;
+    },
+    attachMarkers: function attachMarkers() {
+        var _this3 = this;
+
         this.markers.forEach(function (marker) {
-            return marker.setMap(_this2.map);
+            marker.setMap(_this3.map);
+            if (_this3.settings.modules.spidifier) _this3.spidifier.addMarker(marker);else if (_this3.settings.modules.infobox) google.maps.event.addListener(marker, 'click', _this3.clickMarker);
         });
     },
     initListeners: function initListeners() {
-        var _this3 = this;
+        var _this4 = this;
 
         google.maps.event.addListenerOnce(this.map, 'idle', function () {
-            return _this3.isReady = true;
+            return _this4.isReady = true;
         });
         google.maps.event.addListener(this.map, 'idle', function () {
-            return _this3.mapCentre = _this3.map.getCenter();
+            return _this4.mapCentre = _this4.map.getCenter();
         });
         google.maps.event.addDomListener(window, 'resize', function () {
-            return _this3.map.setCenter(_this3.mapCentre);
+            return _this4.map.setCenter(_this4.mapCentre);
         });
+    },
+    clickMarker: function clickMarker() {
+        var render = function render(template, data) {
+            for (var i in data) {
+                if (data.hasOwnProperty(i)) template = template.split('{{' + i + '}}').join(data[i]);
+            }
+            return template;
+        };
+
+        if (this.infobox) this.infobox.close(self.map, this);
+
+        this.infobox = new InfoBox({
+            content: render(settings.infobox.template, this.infoBoxData),
+            disableAutoPan: false,
+            zIndex: null,
+            maxWidth: 0,
+            boxStyle: settings.infobox.boxStyle,
+            pixelOffset: new google.maps.Size(settings.infobox.pixelOffset[0], settings.infobox.pixelOffset[1]),
+            alignBottom: true,
+            closeBoxMargin: '4px 4px 4px 4px',
+            isHidden: false,
+            closeBoxURL: settings.infobox.closeIcon,
+            infoBoxClearance: new google.maps.Size(1, 1),
+            pane: 'floatPane',
+            enableEventPropagation: false
+        });
+        this.infobox.open(this.map, this);
+        google.maps.event.addListener(this.map, 'click', function () {
+            this.infobox.close(this.map);
+        }.bind(this));
     } /*,
       clearMarkers() {
          if (this.markers.length > 0) {
@@ -181,20 +239,26 @@ var init = function init(sel, locations, opts) {
 
     window.$__GMAPILoaded__$ = run;
 
-    var settings = Object.assign({}, lite$1, opts);
+    var settings = Object.assign({}, full, opts);
 
     return Load([APIPath]).then(function () {
-        return Object.assign(Object.create(componentPrototype), {
-            settings: settings,
-            node: el,
-            locations: locations
-        }).init();
+        return Load(['infobox', 'clusterer', 'spidifier'].filter(function (module) {
+            return settings.modules[module] === true;
+        }).map(function (module) {
+            return libs[module.toUpperCase()];
+        })).then(function () {
+            return Object.assign(Object.create(componentPrototype), {
+                settings: settings,
+                node: el,
+                locations: locations
+            }).init();
+        });
     }).catch(function (e) {
         return console.log('Script loading error: ' + e.message);
     });
 };
 
-var lite$$1 = { init: init };
+var index = { init: init };
 
-exports.default = lite$$1;;
+exports.default = index;;
 }));
