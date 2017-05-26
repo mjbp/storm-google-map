@@ -1,6 +1,6 @@
 /**
  * @name storm-google-map: Google Maps API loader and abstraction layer with spidering, clustering and custom infobox
- * @version 1.0.1: Fri, 05 May 2017 15:39:11 GMT
+ * @version 1.1.0: Fri, 26 May 2017 13:47:52 GMT
  * @author stormid
  * @license MIT
  */
@@ -22,12 +22,12 @@ const init = (sel, locations, opts) => {
 	let settings = Object.assign({}, defaults, opts);
 	
 	return Load([APIPath])
-		.then(() => Object.assign(Object.create(componentPrototype), {
-				settings: settings,
-				node: el,
-				locations: locations
-			}).init())
-		.catch(e => console.log(`Script loading error: ${e.message}`));
+			.then(() => Object.assign(Object.create(componentPrototype), {
+					settings: settings,
+					node: el,
+					locations: locations
+				}).init())
+			.catch(e => console.log(`Script loading error: ${e.message}`));
 };
 
 export default { init };

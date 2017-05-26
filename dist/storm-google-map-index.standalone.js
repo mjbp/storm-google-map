@@ -1,6 +1,6 @@
 /**
  * @name storm-google-map: Google Maps API loader and abstraction layer with spidering, clustering and custom infobox
- * @version 1.0.1: Fri, 05 May 2017 15:39:11 GMT
+ * @version 1.1.0: Fri, 26 May 2017 13:47:52 GMT
  * @author stormid
  * @license MIT
  */
@@ -109,28 +109,19 @@ var full = {
 };
 
 var libs = {
-    GMAPI: 'http://maps.googleapis.com/maps/api/js?callback=$__GMAPILoaded__$',
-    INFOBOX: 'https://cdn.rawgit.com/googlemaps/v3-utility-library/master/infobox/src/infobox_packed.js',
-    CLUSTERER: 'https://cdn.rawgit.com/googlemaps/v3-utility-library/df501fcbc3e7513d6a94718ab6673de47c202255/1.0.2/src/markerclusterer_compiled.js',
-    SPIDIFIER: 'https://jawj.github.io/OverlappingMarkerSpiderfier/bin/oms.min.js'
+    GMAPI: '//maps.googleapis.com/maps/api/js?callback=$__GMAPILoaded__$',
+    INFOBOX: '//cdn.rawgit.com/googlemaps/v3-utility-library/master/infobox/src/infobox_packed.js',
+    CLUSTERER: '//cdn.rawgit.com/googlemaps/v3-utility-library/df501fcbc3e7513d6a94718ab6673de47c202255/1.0.2/src/markerclusterer_compiled.js',
+    SPIDIFIER: '//jawj.github.io/OverlappingMarkerSpiderfier/bin/oms.min.js'
 };
 
 var componentPrototype = {
     init: function init() {
-        this.isReady = false;
-
         this.map = new google.maps.Map(this.node, this.settings.map.options);
         this.boundary = new google.maps.LatLngBounds();
         this.markers = this.createMarkers();
-
-        this.spidifier = this.settings.modules.spidifier ? this.initSpidifier() : false;
-
         this.attachMarkers();
-
-        this.markerCluster = this.settings.modules.clusterer ? new MarkerClusterer(this.map, this.markers, this.settings.clusterer) : false;
-
         this.map.fitBounds(this.boundary);
-
         this.initListeners();
 
         return this;
@@ -140,13 +131,11 @@ var componentPrototype = {
 
         return this.locations.map(function (marker) {
             var latLng = new google.maps.LatLng(marker.location.lat, marker.location.lng);
-
             _this.boundary.extend(latLng);
 
             return new google.maps.Marker({
                 position: latLng,
-                clickable: _this.settings.modules.infobox,
-                infoBoxData: marker,
+                clickable: false,
                 icon: {
                     url: _this.settings.map.markerIcon,
                     scaledSize: new google.maps.Size(24, 24)
@@ -155,76 +144,23 @@ var componentPrototype = {
             });
         });
     },
-    initSpidifier: function initSpidifier() {
+    attachMarkers: function attachMarkers() {
         var _this2 = this;
 
-        var spidifier = new OverlappingMarkerSpiderfier(this.map, this.settings.spiderifier);
-        if (this.settings.modules.infobox) spidifier.addListener('click', function (marker) {
-            return _this2.clickMarker.call(marker);
-        });
-        return spidifier;
-    },
-    attachMarkers: function attachMarkers() {
-        var _this3 = this;
-
         this.markers.forEach(function (marker) {
-            marker.setMap(_this3.map);
-            if (_this3.settings.modules.spidifier) _this3.spidifier.addMarker(marker);else if (_this3.settings.modules.infobox) google.maps.event.addListener(marker, 'click', _this3.clickMarker);
+            return marker.setMap(_this2.map);
         });
     },
     initListeners: function initListeners() {
-        var _this4 = this;
+        var _this3 = this;
 
-        google.maps.event.addListenerOnce(this.map, 'idle', function () {
-            return _this4.isReady = true;
-        });
         google.maps.event.addListener(this.map, 'idle', function () {
-            return _this4.mapCentre = _this4.map.getCenter();
+            return _this3.mapCentre = _this3.map.getCenter();
         });
         google.maps.event.addDomListener(window, 'resize', function () {
-            return _this4.map.setCenter(_this4.mapCentre);
+            return _this3.map.setCenter(_this3.mapCentre);
         });
-    },
-    clickMarker: function clickMarker() {
-        var render = function render(template, data) {
-            for (var i in data) {
-                if (data.hasOwnProperty(i)) template = template.split('{{' + i + '}}').join(data[i]);
-            }
-            return template;
-        };
-
-        if (this.infobox) this.infobox.close(self.map, this);
-
-        this.infobox = new InfoBox({
-            content: render(settings.infobox.template, this.infoBoxData),
-            disableAutoPan: false,
-            zIndex: null,
-            maxWidth: 0,
-            boxStyle: settings.infobox.boxStyle,
-            pixelOffset: new google.maps.Size(settings.infobox.pixelOffset[0], settings.infobox.pixelOffset[1]),
-            alignBottom: true,
-            closeBoxMargin: '4px 4px 4px 4px',
-            isHidden: false,
-            closeBoxURL: settings.infobox.closeIcon,
-            infoBoxClearance: new google.maps.Size(1, 1),
-            pane: 'floatPane',
-            enableEventPropagation: false
-        });
-        this.infobox.open(this.map, this);
-        google.maps.event.addListener(this.map, 'click', function () {
-            this.infobox.close(this.map);
-        }.bind(this));
-    } /*,
-      clearMarkers() {
-         if (this.markers.length > 0) {
-             this.markers.forEach(function(marker){
-                 marker.setMap(null);
-             });
-             this.markers.length = 0;
-             this.spidifier.clearMarkers(); 
-         }
-      }*/
-
+    }
 };
 
 var run = function run() {

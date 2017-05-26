@@ -16,12 +16,12 @@ const init = (sel, locations, opts) => {
 	let settings = Object.assign({}, defaults, opts);
 	
 	return Load([APIPath])
-		.then(() => Object.assign(Object.create(componentPrototype), {
-				settings: settings,
-				node: el,
-				locations: locations
-			}).init())
-		.catch(e => console.log(`Script loading error: ${e.message}`));
+			.then(() => Object.assign(Object.create(componentPrototype), {
+					settings: settings,
+					node: el,
+					locations: locations
+				}).init())
+			.catch(e => console.log(`Script loading error: ${e.message}`));
 };
 
 export default { init };

@@ -1,6 +1,6 @@
 /**
  * @name storm-google-map: Google Maps API loader and abstraction layer with spidering, clustering and custom infobox
- * @version 1.0.1: Fri, 05 May 2017 15:39:11 GMT
+ * @version 1.1.0: Fri, 26 May 2017 13:47:52 GMT
  * @author stormid
  * @license MIT
  */
@@ -95,25 +95,19 @@ var lite$1 = {
 };
 
 var libs = {
-    GMAPI: 'http://maps.googleapis.com/maps/api/js?callback=$__GMAPILoaded__$',
-    INFOBOX: 'https://cdn.rawgit.com/googlemaps/v3-utility-library/master/infobox/src/infobox_packed.js',
-    CLUSTERER: 'https://cdn.rawgit.com/googlemaps/v3-utility-library/df501fcbc3e7513d6a94718ab6673de47c202255/1.0.2/src/markerclusterer_compiled.js',
-    SPIDIFIER: 'https://jawj.github.io/OverlappingMarkerSpiderfier/bin/oms.min.js'
+    GMAPI: '//maps.googleapis.com/maps/api/js?callback=$__GMAPILoaded__$',
+    INFOBOX: '//cdn.rawgit.com/googlemaps/v3-utility-library/master/infobox/src/infobox_packed.js',
+    CLUSTERER: '//cdn.rawgit.com/googlemaps/v3-utility-library/df501fcbc3e7513d6a94718ab6673de47c202255/1.0.2/src/markerclusterer_compiled.js',
+    SPIDIFIER: '//jawj.github.io/OverlappingMarkerSpiderfier/bin/oms.min.js'
 };
 
 var componentPrototype = {
     init: function init() {
-        this.isReady = false;
-
         this.map = new google.maps.Map(this.node, this.settings.map.options);
         this.boundary = new google.maps.LatLngBounds();
-
         this.markers = this.createMarkers();
-
         this.attachMarkers();
-
         this.map.fitBounds(this.boundary);
-
         this.initListeners();
 
         return this;
@@ -123,7 +117,6 @@ var componentPrototype = {
 
         return this.locations.map(function (marker) {
             var latLng = new google.maps.LatLng(marker.location.lat, marker.location.lng);
-
             _this.boundary.extend(latLng);
 
             return new google.maps.Marker({
@@ -147,26 +140,13 @@ var componentPrototype = {
     initListeners: function initListeners() {
         var _this3 = this;
 
-        google.maps.event.addListenerOnce(this.map, 'idle', function () {
-            return _this3.isReady = true;
-        });
         google.maps.event.addListener(this.map, 'idle', function () {
             return _this3.mapCentre = _this3.map.getCenter();
         });
         google.maps.event.addDomListener(window, 'resize', function () {
             return _this3.map.setCenter(_this3.mapCentre);
         });
-    } /*,
-      clearMarkers() {
-         if (this.markers.length > 0) {
-             this.markers.forEach(function(marker){
-                 marker.setMap(null);
-             });
-             this.markers.length = 0;
-             this.spidifier.clearMarkers(); 
-         }
-      }*/
-
+    }
 };
 
 var run = function run() {
