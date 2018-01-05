@@ -24,6 +24,19 @@ const onDOMContentLoadedTasks = [() => {
 				.then(res => {
 					console.log(res);
 				});
+
+			StormGoogleMap.init('#js-map-2', [
+				{
+					id: 'Storm',
+					title: 'Storm Id',
+					location : { 
+						lat: 55.9749013,
+						lng: -3.1669848
+					}
+				}])
+				.then(res => {
+					console.log(res);
+				});
 		});
 }];
     
