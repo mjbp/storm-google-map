@@ -9,7 +9,8 @@ var gulp = require('gulp'),
 	notify = require('gulp-notify'),
 	uglify = require('gulp-uglify'),
 	rollup = require('gulp-rollup'),
-	rollupNodeResolve = require('rollup-plugin-node-resolve'),
+    rollupNodeResolve = require('rollup-plugin-node-resolve'),
+    commonjs = require('rollup-plugin-commonjs'),
 	rename = require('gulp-rename'),
 	babel = require('gulp-babel'),
 	browserify = require('browserify'),
@@ -84,13 +85,16 @@ gulp.task('js:es5', function() {
 });
 
 gulp.task('js:es5-rollup', function() {
-	return gulp.src(['src/' + pkg.name + '.js', 'src/' + pkg.name + '-lite.js'])
+	return gulp.src('src/index.js')
         .pipe(rollup({
 			allowRealFiles: true,
-            entry: ['src/' + pkg.name + '.js', 'src/' + pkg.name + '-lite.js'],
-			format: 'es',
+            input: 'src/index.js',
+            output: {
+                format: 'es'
+            },
 			plugins: [
-				rollupNodeResolve()
+				rollupNodeResolve(),
+                commonjs()
 			]
         }))
         .pipe(babel({
@@ -101,7 +105,10 @@ gulp.task('js:es5-rollup', function() {
             template: umdTemplate
         }))
         .pipe(header(banner, {pkg : pkg}))
-  		.pipe(rename({suffix: '.standalone'}))
+  		.pipe(rename({
+            basename: pkg.name,
+            suffix: '.standalone'
+        }))
 		.pipe(gulp.dest('dist/'));
 });
 
