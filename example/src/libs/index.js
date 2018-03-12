@@ -1,3 +1,9 @@
+/**
+ * @name storm-google-map: Google Maps API loader and abstraction layer with spidering, clustering and infobox
+ * @version 0.1.2: Mon, 12 Mar 2018 22:56:58 GMT
+ * @author stormid
+ * @license MIT
+ */
 import Load from 'storm-load';
 import defaults from './lib/defaults';
 import { libs } from './lib/constants';

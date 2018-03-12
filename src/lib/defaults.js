@@ -5,6 +5,7 @@ export default {
         clusterer: false,
         spidifier: false
     },
+    moduleBasePath: './',
     mapOptions : {
         scaleControl: false,
         scrollwheel: false,
@@ -13,7 +14,8 @@ export default {
         panControl: false,
         rotateControl: false,
         streetViewControl: true,
-        zoomControl: true
+        zoomControl: true,
+        maxZoom: 16
     },
     markerIcon : 'data:image/svg+xml;charset=US-ASCII,%3Csvg%20fill%3D%22%23000000%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20width%3D%2224%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%0A%20%20%20%20%3Cpath%20d%3D%22M12%202C8.13%202%205%205.13%205%209c0%205.25%207%2013%207%2013s7-7.75%207-13c0-3.87-3.13-7-7-7zm0%209.5c-1.38%200-2.5-1.12-2.5-2.5s1.12-2.5%202.5-2.5%202.5%201.12%202.5%202.5-1.12%202.5-2.5%202.5z%22/%3E%0A%20%20%20%20%3Cpath%20d%3D%22M0%200h24v24H0z%22%20fill%3D%22none%22/%3E%0A%3C/svg%3E',
     styles : [

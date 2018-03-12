@@ -11,5 +11,5 @@ export default (node, locations = [], settings) => {
     state.map.fitBounds(state.boundary);
     drawMarkers(state);
     console.log(state)
-    return Object.assign({}, state)
+    return state
 };

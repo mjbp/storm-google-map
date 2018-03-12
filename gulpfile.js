@@ -73,7 +73,7 @@ gulp.task('js:es5', function() {
     return gulp.src('src/*.js')
         .pipe(plumber({errorHandler: onError}))
         .pipe(babel({
-			presets: ['es2015']
+			presets: ['emv']
 		}))
         .pipe(wrap({
             namespace: componentName(),
@@ -98,7 +98,7 @@ gulp.task('js:es5-rollup', function() {
 			]
         }))
         .pipe(babel({
-			presets: ['es2015']
+			presets: ['env']
 		}))
         .pipe(wrap({
             namespace: componentName(),
@@ -113,13 +113,18 @@ gulp.task('js:es5-rollup', function() {
 });
 
 gulp.task('js:es6', function() {
-    return gulp.src('src/*.js')
+    return gulp.src(['src/*.js', '!src/libs/*.js'])
         .pipe(plumber({errorHandler: onError}))
         .pipe(header(banner, {pkg : pkg}))
 		.pipe(gulp.dest('dist/'));
 });
 
-gulp.task('js', ['js:es6', 'js:es5-rollup']);
+gulp.task('js:libs', function() {
+    return gulp.src('src/libs/*.js')
+		.pipe(gulp.dest('dist/'));
+});
+
+gulp.task('js', ['js:es6', 'js:es5-rollup', 'js:libs']);
 
 gulp.task('copy', function() {
     return gulp.src('./dist/*.js')
@@ -131,7 +136,7 @@ gulp.task('example:import', function(){
             entries: './example/src/app.js',
             debug: true
         })
-        .transform(babelify, {presets: ['es2015']})
+        .transform(babelify, {presets: ['env']})
         .bundle()
         .pipe(source('app.js'))
         .pipe(buffer())
@@ -153,7 +158,7 @@ gulp.task('server', ['js', 'copy', 'example'], function() {
         tunnel: false
     });
 
-      gulp.watch(['src/*'], function(){
+      gulp.watch(['src/**/*.js'], function(){
           runSequence('js', 'copy', 'example', reload);
       });
       gulp.watch(['example/**/*'], ['example', reload]);
