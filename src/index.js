@@ -21,7 +21,7 @@ const init = (sel, locations, opts) => {
 								.filter(module => settings.modules[module])
 								.map(module => `${settings.moduleBasePath}${libs[module.toUpperCase()]}`)
 						)
-						.then(() => Object.create(factory(el, locations, Object.assign({}, defaults, opts))))
+						.then(() => Object.create(factory(el, locations, settings)))
 				)
 			.catch(e => console.log(`Script loading error: ${e.message}`));
 };

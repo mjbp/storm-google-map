@@ -1,6 +1,6 @@
 /**
  * @name storm-google-map: Google Maps API loader and abstraction layer with spidering, clustering and infobox
- * @version 0.1.2: Mon, 12 Mar 2018 22:56:58 GMT
+ * @version 0.1.2: Tue, 13 Mar 2018 22:12:53 GMT
  * @author stormid
  * @license MIT
  */
@@ -27,7 +27,7 @@ const init = (sel, locations, opts) => {
 								.filter(module => settings.modules[module])
 								.map(module => `${settings.moduleBasePath}${libs[module.toUpperCase()]}`)
 						)
-						.then(() => Object.create(factory(el, locations, Object.assign({}, defaults, opts))))
+						.then(() => Object.create(factory(el, locations, settings)))
 				)
 			.catch(e => console.log(`Script loading error: ${e.message}`));
 };

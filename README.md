@@ -70,6 +70,8 @@ Load('/content/js/async/storm-google-map.standalone.js')
 
 ###Options
 Your own Google Maps API key will be required
+
+Infobox options are specified at http://htmlpreview.github.io/?https://github.com/googlemaps/v3-utility-library/blob/master/infobox/docs/reference.html
 ```
     defaults = {
             key: null,//your key
