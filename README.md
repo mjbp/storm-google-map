@@ -66,9 +66,11 @@ Load('/content/js/async/storm-google-map.standalone.js')
 ```
 
 ### Options
-Your own Google Maps API key will be required
+Your own Google Maps API key will be required, create and manage yours at https://console.developers.google.com/
 
-Infobox options are specified at http://htmlpreview.github.io/?https://github.com/googlemaps/v3-utility-library/blob/master/infobox/docs/reference.html
+Infobox options are specified at http://htmlpreview.github.io/?https://github.com/googlemaps/v3-utility-library/blob/master/infobox/docs/reference.html.
+
+Google map styles can be easily created at https://mapstyle.withgoogle.com/
 ```
 defaults = {
     key: null,
