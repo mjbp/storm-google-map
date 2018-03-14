@@ -23,9 +23,9 @@ const hydrate = (locations, settings, map) => {
     }
 };
 
-const refresh = locations => {
-    clear();
-    state = Object.assign({}, state, hydrate(locations, state.settings, state.map));
+const render = () => {
+    drawMarkers(state);
+    state.settings.modules.infobox && initHandlers(state);
     state.map.fitBounds(state.boundary);
 };
 
@@ -33,14 +33,15 @@ export default (node, locations = [], settings) => {
     let map = new google.maps.Map(node, Object.assign({}, settings.mapOptions, { styles: settings.styles }));
     
     state = Object.assign({ map, locations, settings }, hydrate(locations, settings, map));
-    drawMarkers(state);
-    settings.modules.infobox && initHandlers(state);
-
-    state.map.fitBounds(state.boundary);
+    render();
 
     return {
         map: state.map,
         clear,
-        refresh
+        refresh(locations){
+            clear();
+            state = Object.assign({}, state, hydrate(locations, state.settings, state.map));
+            render();
+        }
     }
 };
