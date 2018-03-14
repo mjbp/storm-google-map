@@ -1,4 +1,4 @@
-#S torm Google Map
+# Storm Google Map
 [![npm version](https://badge.fury.io/js/storm-google-map.svg)](https://badge.fury.io/js/storm-google-map)
 
 Google Maps API abstraction layer, bundling Google Maps API, (optionally including custom Infobox, Marker Clusterer and Marker Spidifier as needed) in a single, easily configurable module.
