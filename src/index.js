@@ -15,15 +15,16 @@ const init = (sel, locations, opts) => {
 
 	let settings =  Object.assign({}, defaults, opts);
 	
-	return Load([APIPath])
-			.then(() => Load(
-							['infobox', 'clusterer', 'spiderifier']
-								.filter(module => settings.modules[module])
-								.map(module => `${settings.moduleBasePath}${libs[module.toUpperCase()]}`)
-						)
-						.then(() => Object.create(factory(el, locations, settings)))
-				)
-			.catch(e => console.log(`Script loading error: ${e.message}`));
+		return Load([APIPath])
+				.then(() => Load(
+								['infobox', 'clusterer', 'spiderifier']
+									.filter(module => settings.modules[module])
+									.map(module => `${settings.moduleBasePath}${libs[module.toUpperCase()]}`)
+							)
+							.then(() => {
+								return factory(el, locations, settings);
+							})
+				.catch(e => console.warn(`Script loading error: ${e.message}`)));
 };
 
 export default { init };

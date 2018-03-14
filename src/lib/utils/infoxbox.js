@@ -9,7 +9,7 @@ export const clickMarker = (marker, settings) => () => {
 };
 
 const closeInfobox = () => {
-    activeMarker.infobox.close(activeMarker.map, activeMarker);
+    activeMarker && activeMarker.infobox.close(activeMarker.map, activeMarker);
     activeMarker = null;
 };
 

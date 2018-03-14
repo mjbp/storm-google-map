@@ -1,45 +1,40 @@
 import { clickMarker } from '../utils/infoxbox';
 
-export const plotMarkers = (settings, locations, boundary) => {
-    let markers = locations.map(marker => {
-        let latLng = new google.maps.LatLng(marker.location.lat, marker.location.lng);
+export const createMarkers = (locations, settings) => locations.map(place => new google.maps.Marker({
+        position: new google.maps.LatLng(place.location.lat, place.location.lng),
+        clickable: settings.modules.infobox,
+        data : place,
+        icon: {
+            url: settings.markerIcon,
+            scaledSize: new google.maps.Size(24,24)
+        },
+        optimized: false,
+    })
+);
 
-        boundary.extend(latLng);
-        
-        return new google.maps.Marker({
-            position: latLng,
-            clickable: settings.modules.infobox,
-            data : marker,
-            icon: {
-                url: settings.markerIcon,
-                scaledSize: new google.maps.Size(24,24)
-            },
-            optimized: false,
-        });
-    });
+export const extendBoundary = (markers, boundary) => {
+    markers.map(marker => { boundary.extend(marker.position); });
 
-    return {
-        boundary,
-        markers
-    }
+    return boundary;
 };
 
 export const drawMarkers = state => {
-    state.markers.forEach(marker => { marker.setMap(state.map)});
+    state.markers.forEach(marker => { 
+        marker.setMap(state.map)}
+    );
 };
 
 export const initHandlers = state => {
     state.markers.forEach(marker => {
-        if(state.settings.modules.spidifier) state.spidifier.addMarker(marker);
+        if(state.spiderifier) state.spiderifier.addMarker(marker);
         else if (state.settings.modules.infobox) google.maps.event.addListener(marker, 'click', clickMarker(marker, state.settings));
     });
+    if(state.spiderifier) state.spiderifier.addListener('click', marker => clickMarker(marker, state.settings)());
 };
 
 export const clearMarkers = markers => {
     markers.forEach(marker => {
         marker.setMap(null);
     });
-    // this.spiderifier = null;
-    // this.markerCluster.clearMarkers();
-    // this.boundary = null;
+    return [];
 };

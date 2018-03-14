@@ -1,49 +1,46 @@
-import { plotMarkers, drawMarkers, initHandlers } from './markers';
+import { createMarkers, extendBoundary, drawMarkers, clearMarkers, initHandlers } from './markers';
+
 let state = {};
 
-/*
+const clear = () => {
+    state = Object.assign({}, state, {
+        markers: clearMarkers(state.markers),
+        boundary: null,
+        clusterer: state.clusterer ? (state.clusterer.clearMarkers(), null) : null,
+        spiderifier: null
+    });
+};
 
-clearMarkers(){
-        this.markers.forEach(marker => {
-            marker.setMap(null);
-            google.maps.event.addListener(marker, 'click', this.clickMarker.bind(this, marker));
-        });
-        this.spiderifier = null;
-        this.markerCluster.clearMarkers();
-        this.boundary = null;
-    },
+const hydrate = (locations, settings, map) => {
+    let markers = locations.length > 0 ? createMarkers(locations, settings) : [],
+        boundary = locations.length > 0 ? extendBoundary(markers, new google.maps.LatLngBounds()) : new google.maps.LatLngBounds();
 
+    return {
+        markers,
+        boundary,
+        clusterer: settings.modules.clusterer ? new MarkerClusterer(map, markers, settings.clusterer) : false,
+        spiderifier: settings.modules.spiderifier ? new OverlappingMarkerSpiderfier(map, settings.spiderifier) : false
+    }
+};
 
+const refresh = locations => {
+    clear();
+    state = Object.assign({}, state, hydrate(locations, state.settings, state.map));
+    state.map.fitBounds(state.boundary);
+};
 
-    google.maps.event.addListener(this.map, 'idle', () => {
-            if(this.locations.length === 0) this.map.setCenter(new google.maps.LatLng(this.settings.defaultCenter.lat, this.settings.defaultCenter.lng));
-            this.mapCentre = this.map.getCenter();
-        });
-        google.maps.event.addDomListener(window, 'resize', () => this.map.setCenter(this.mapCentre));
-
-refresh(locations){
-        this.clearMarkers();
-        this.locations = locations;
-        this.initMarkers();
-    },
-
-    */
 export default (node, locations = [], settings) => {
-    state = Object.assign({}, {
-                map: new google.maps.Map(node, Object.assign({}, settings.mapOptions, { styles: settings.styles }))
-            },
-            { settings },
-            plotMarkers(settings, locations, new google.maps.LatLngBounds())
-        );
+    let map = new google.maps.Map(node, Object.assign({}, settings.mapOptions, { styles: settings.styles }));
+    
+    state = Object.assign({ map, locations, settings }, hydrate(locations, settings, map));
+    drawMarkers(state);
+    settings.modules.infobox && initHandlers(state);
 
     state.map.fitBounds(state.boundary);
-    drawMarkers(state);
-    
-    settings.modules.infobox && initHandlers(state);
-    if(settings.modules.clusterer) state = Object.assign({}, state, {
-        clusterer: new MarkerClusterer(state.map, state.markers, settings.clusterer)
-    });
-    
-    console.log(state)
-    return state
+
+    return {
+        map: state.map,
+        clear,
+        refresh
+    }
 };

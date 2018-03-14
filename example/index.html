@@ -94,47 +94,47 @@
         <pre><code class="language-js">import GoogleMap from 'storm-google-map';
             
 GoogleMap.init('.js-map', [
-        {
-            id: 'Storm',
-            title: 'Storm Id',
-            location : { 
-                lat: 55.9749013,
-                lng: -3.1669848
-            }
-        },
-        {
-            id: 'Waverley',
-            title: 'Waverley Station',
-            location : {
-                lat: 55.9519979,
-                lng: -3.1899702
-            }
-        }], {
-        key: 'Your key'
-    });</code></pre>
+    {
+        id: 'Storm',
+        title: 'Storm Id',
+        location : { 
+            lat: 55.9749013,
+            lng: -3.1669848
+        }
+    },
+    {
+        id: 'Waverley',
+        title: 'Waverley Station',
+        location : {
+            lat: 55.9519979,
+            lng: -3.1899702
+        }
+    }], {
+    key: 'Your key'
+});</code></pre>
         <p>Or async using storm-load.js, add the .standalone file to your project, then initialise using the global name:</p>
         <pre><code class="language-js">Load('/content/js/async/storm-google-map.standalone.js')
-.then(() => {
-StormGoogleMap.init('.js-map', [
-        {
-            id: 'Storm',
-            title: 'Storm Id',
-            location : { 
-                lat: 55.9749013,
-                lng: -3.1669848
-            }
-        },
-        {
-            id: 'Waverley',
-            title: 'Waverley Station',
-            location : {
-                lat: 55.9519979,
-                lng: -3.1899702
-            }
-        }], {
-        key: 'Your key'
-    });
-});</code></pre>
+    .then(() => {
+        StormGoogleMap.init('.js-map', [
+                {
+                    id: 'Storm',
+                    title: 'Storm Id',
+                    location : { 
+                        lat: 55.9749013,
+                        lng: -3.1669848
+                    }
+                },
+                {
+                    id: 'Waverley',
+                    title: 'Waverley Station',
+                    location : {
+                        lat: 55.9519979,
+                        lng: -3.1899702
+                    }
+                }], {
+                key: 'Your key'
+            });
+        });</code></pre>
     </div>
     <script src="./js/app.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/prism.min.js"></script>
